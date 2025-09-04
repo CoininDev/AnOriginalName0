@@ -18,12 +18,22 @@ ORDER BY embedding <=> ?
 LIMIT 5;
 `
 
+const ALPHA = 5
+
 type OgTextController struct {
 	DB *gorm.DB
 }
 
 type CreateOgTextRequest struct {
 	Text string `json:"text"`
+}
+
+func Originality(distances []float64, alpha float64) float64 {
+	originality := 1.0
+	for _, d := range distances {
+		originality *= (1 - math.Exp(-alpha*d))
+	}
+	return originality
 }
 
 func (otc *OgTextController) CreateOgText(c *gin.Context) {
@@ -85,8 +95,7 @@ func (otc *OgTextController) CompareText(c *gin.Context) {
 	for _, res := range results {
 		dists = append(dists, float64(res.Distance))
 	}
-	originality := utils.Mean(dists)
-	originality = math.Max(0, math.Min(1, originality))
+	originality := Originality(dists, ALPHA)
 	orgyF32 := float32(originality)
 
 	c.JSON(http.StatusOK, gin.H{
@@ -128,53 +137,16 @@ func (otc *OgTextController) CompareFeed(c *gin.Context) {
 		return
 	}
 
-	// Configura a distância máxima para normalização
-	const maxDistance = 2.0
-
-	var normDists []float64
-	var weights []float64
-	zeroDistance := false
-
-	for i, res := range results {
-		dist := float64(res.Distance)
-		if dist <= 0.000001 {
-			zeroDistance = true
-		}
-
-		// normaliza a distância
-		normDist := dist / maxDistance
-		if normDist > 1 {
-			normDist = 1
-		}
-		normDists = append(normDists, normDist)
-
-		// pesos decrescentes (ex: vizinho mais próximo tem peso maior)
-		// aqui usei 1/(i+1), mas você pode ajustar
-		weights = append(weights, 1.0/float64(i+1))
+	var dists []float64
+	for _, res := range results {
+		dists = append(dists, float64(res.Distance))
 	}
-
-	var originality float64
-	if zeroDistance {
-		originality = 0.0
-	} else {
-		weightedSum := 0.0
-		weightTotal := 0.0
-		for i := range normDists {
-			weightedSum += normDists[i] * weights[i]
-			weightTotal += weights[i]
-		}
-		originality = 1.0 - (weightedSum / weightTotal)
-		if originality < 0 {
-			originality = 0
-		}
-		if originality > 1 {
-			originality = 1
-		}
-	}
+	originality := Originality(dists, ALPHA)
+	orgyF32 := float32(originality)
 
 	c.JSON(http.StatusOK, gin.H{
 		"text":         req.Text,
-		"originality":  float32(originality),
+		"originality":  orgyF32,
 		"most_similar": results[0],
 	})
 }
