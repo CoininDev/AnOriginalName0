@@ -117,10 +117,7 @@ func (otc *OgTextController) CompareFeed(c *gin.Context) {
 	}
 	otc.DB.Raw(ANN_QUERY, vec, vec).Scan(&results)
 
-	if err := otc.DB.Create(&ogtext).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	otc.DB.Create(&ogtext)
 
 	if len(results) <= 0 {
 		c.JSON(http.StatusOK, gin.H{
