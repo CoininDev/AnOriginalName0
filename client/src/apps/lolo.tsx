@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 
+const server = import.meta.env.VITE_SERVER_URL;
+
 interface MostSimilarText {
     Distance: number;
-    ID: Number;
+    ID: number;
     Text: string;
 }
 
@@ -23,7 +25,7 @@ const SearchAPI: React.FC = () => {
     setError('');
     setResult(null);
     try {
-      const response = await fetch('http://localhost:6868/compare', {
+      const response = await fetch(`${server}/compare`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: input })
@@ -59,6 +61,8 @@ const SearchAPI: React.FC = () => {
           <p><strong>Seu texto:</strong> {result.text}</p>
         </div>
       )}
+      <p>{server}</p>
+      <p>{input}</p>
     </div>
   );
 };
