@@ -1,5 +1,5 @@
-/__pycache__
+/server/embeddings_microservice/__pycache__/
 /server/.env
-/server/tmp
-/server/embeddings_microservice/venv
-/server/embeddings_microservice/.venv
+/server/tmp/
+/server/embeddings_microservice/venv/
+/server/embeddings_microservice/.venv/
