@@ -15,9 +15,9 @@ const ANN_QUERY = `
 SELECT id, text, embedding <=> ? AS distance
 FROM og_texts
 ORDER BY embedding <=> ?
-LIMIT 5;
+LIMIT 20;
 `
-
+const TOP_K = 3
 const ALPHA = 5
 
 type OgTextController struct {
@@ -98,10 +98,15 @@ func (otc *OgTextController) CompareText(c *gin.Context) {
 	originality := Originality(dists, ALPHA)
 	orgyF32 := float32(originality)
 
+	topK := results
+	if len(topK) > TOP_K {
+		topK = topK[:TOP_K]
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"text":         req.Text,
 		"originality":  orgyF32,
-		"most_similar": results[0],
+		"most_similar": topK,
 	})
 }
 
@@ -144,9 +149,14 @@ func (otc *OgTextController) CompareFeed(c *gin.Context) {
 	originality := Originality(dists, ALPHA)
 	orgyF32 := float32(originality)
 
+	topK := results
+	if len(topK) > TOP_K {
+		topK = topK[:TOP_K]
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"text":         req.Text,
 		"originality":  orgyF32,
-		"most_similar": results[0],
+		"most_similar": topK,
 	})
 }

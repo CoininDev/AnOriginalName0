@@ -24,7 +24,7 @@ const SearchBar: React.FC<SearchAPIProps> = ({ onSearch }) => {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch('api/compare', {
+      const response = await fetch('api/texts/compare-and-save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: input })
