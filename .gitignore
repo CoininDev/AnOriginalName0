@@ -6,3 +6,5 @@
 /server/embeddings_microservice/.venv/
 
 /client/.env
+
+/run/tmp/

@@ -25,7 +25,7 @@ const SearchAPI: React.FC = () => {
     setError('');
     setResult(null);
     try {
-      const response = await fetch(`${server}/compare`, {
+      const response = await fetch(`api/compare`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: input })
