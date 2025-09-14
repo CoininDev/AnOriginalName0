@@ -5,14 +5,13 @@ import SearchBar, { ApiResponse } from './comps/searchbar';
 import HistoryList from './comps/history_list';
 
 const App: React.FC = () => {
-  var [history, setHistory] = React.useState<ApiResponse[]>([]);
-   const addResult = (result: ApiResponse) => {
-    setHistory(prev => [result, ...prev]); // adiciona no topo
+  const [history, setHistory] = React.useState<ApiResponse[]>([]);
+  const addResult = (result: ApiResponse) => {
+    setHistory(prev => [result, ...prev]); 
   };
 
   return (
-    <div>
-      <h1>An Original Name</h1>
+    <div className='max-w-lg mx-auto mt-15'>
       <SearchBar onSearch={addResult} />
       <HistoryList history={history} />
     </div>

@@ -19,5 +19,5 @@ func SetupRoutes(r *gin.Engine, db *gorm.DB) {
 	/// Compare get the text from the db and compare it to the input text
 	/// This stores the comparison result in the db
 	/// Returns identically structured response as GET /compare
-	r.POST("/texts/compare-and-feed", otc.CompareFeed)
+	r.POST("/texts/compare-and-save", otc.CompareFeed)
 }

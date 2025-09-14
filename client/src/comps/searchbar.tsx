@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { Button } from "@/components/ui/button"
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 
 interface MostSimilarText {
     Distance: number;
@@ -7,7 +10,7 @@ interface MostSimilarText {
 }
 
 interface ApiResponse {
-  most_similar: MostSimilarText;
+  most_similar: MostSimilarText[];
   originality: number;
   text: string;
 }
@@ -39,20 +42,27 @@ const SearchBar: React.FC<SearchAPIProps> = ({ onSearch }) => {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if(e.key === "Enter"){
+      e.preventDefault();
+      handleSearch()
+    }
+  }
+
   return (
-    <div style={{ maxWidth: 500, margin: 'auto' }}>
-      <h2>Pesquisar Texto</h2>
-      <textarea
-        value={input}
-        onChange={e => setInput(e.target.value)}
-        rows={4}
-        style={{ width: '100%' }}
-        placeholder="Digite seu texto aqui"
-      />
-      <button onClick={handleSearch} disabled={loading || !input}>
-        {loading ? 'Pesquisando...' : 'Pesquisar'}
-      </button>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+    <div>
+      <div className='flex gap-2'>
+        <Input
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Digite seu texto aqui"
+        />
+        <Button onClick={handleSearch} disabled={loading || !input}>
+          {loading ? 'Pesquisando...' : 'Pesquisar'}
+        </Button>
+      </div>
+      {error && <Badge variant="destructive" className='mt-3'>{error}</Badge>}
     </div>
   );
 };
