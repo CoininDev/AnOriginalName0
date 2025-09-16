@@ -1,8 +1,13 @@
 # An Original Name
 This project provides a back-end API that evaluates the originality score of a given text, based on a similarity search against its database.
 
+![App printscreen](./gallery/photo3.png)
+```
+Go + Gin + Python + AI + React.ts + Supabase + PostgreSQL + pgvector + nginx = XD
+```
+
 ## Features
-- Calculates originality scores in the range `[0,1]` (lower = less original, higher = more original).
+- Calculates originality scores in porcentages % (lower = less original, higher = more original).
 - Uses semantic embeddings to compare text similarity.
 - Efficient nearest neighbor search with `pgvector`.
 - Designed to be easily extendable for other NLP tasks.
@@ -12,5 +17,4 @@ This project provides a back-end API that evaluates the originality score of a g
 - **Text Embeddings**: Python microservice with [sentence-transformers](https://www.sbert.net/) (`all-MiniLM-L6-v2`)
 - **Database**: [Supabase](https://supabase.com/) with PostgreSQL + [pgvector](https://github.com/pgvector/pgvector)
 - **Search Optimization**: ANN (Approximate Nearest Neighbor) + indexes for fast queries
-
 
