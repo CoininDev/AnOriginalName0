@@ -14,6 +14,12 @@ import (
 	"github.com/gin-contrib/cors"
 )
 
+import { embeddingService } from './lib/embeddings';
+
+embeddingService.init().then(() => {
+  console.log('Modelo pronto para uso!');
+});
+
 func init() {
 	godotenv.Load(".env")
 }

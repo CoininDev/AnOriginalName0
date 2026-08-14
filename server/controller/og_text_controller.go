@@ -25,7 +25,8 @@ type OgTextController struct {
 }
 
 type CreateOgTextRequest struct {
-	Text string `json:"text"`
+	Text      string     `json:"text"`
+	Embedding []float32w `json:"embedding"`
 }
 
 func Originality(distances []float64, alpha float64) float64 {

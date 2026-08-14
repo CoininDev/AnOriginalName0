@@ -24,7 +24,6 @@
 
 
     //shadcn/ui
-    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./src/*"
