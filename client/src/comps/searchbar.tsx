@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 
+const API_URL = import.meta.env.VITE_API_URL || '';
+
+
 interface MostSimilarText {
     Distance: number;
     ID: number;
@@ -27,7 +30,7 @@ const SearchBar: React.FC<SearchAPIProps> = ({ onSearch }) => {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch('api/texts/compare-and-save', {
+      const response = await fetch(`${API_URL}/api/texts/compare-and-save`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: input })

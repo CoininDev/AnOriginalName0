@@ -32,5 +32,7 @@ func main() {
 	}))
 
 	routes.SetupRoutes(router, db)
-	router.Run(":6868")
+
+	port := os.Getenv("PORT")
+	router.Run(":" +  port)
 }

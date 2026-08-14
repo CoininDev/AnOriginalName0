@@ -14,7 +14,8 @@ type EmbeddingResponse struct {
 }
 
 func EmbeddingAPI(text string) EmbeddingResponse {
-	resp, err := http.Post("http://localhost:6969/embed", "text/plain", bytes.NewBufferString(text))
+	embeddingURL := os.Getenv("EMBEDDING_SERVICE_URL")
+	resp, err := http.Post(embeddingURL, "text/plain", bytes.NewBufferString(text))
 	if err != nil {
 		log.Panicf("EmbeddingAPI não disponível (esqueceu de ligar?)\n\"%v\"", err)
 	}
