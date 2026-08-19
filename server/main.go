@@ -14,12 +14,6 @@ import (
 	"github.com/gin-contrib/cors"
 )
 
-import { embeddingService } from './lib/embeddings';
-
-embeddingService.init().then(() => {
-  console.log('Modelo pronto para uso!');
-});
-
 func init() {
 	godotenv.Load(".env")
 }
@@ -40,5 +34,5 @@ func main() {
 	routes.SetupRoutes(router, db)
 
 	port := os.Getenv("PORT")
-	router.Run(":" +  port)
+	router.Run(":" + port)
 }
