@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/CoininDev/anoriginalname0/model"
-	"github.com/CoininDev/anoriginalname0/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/pgvector/pgvector-go"
 	"gorm.io/gorm"
@@ -43,11 +42,10 @@ func (otc *OgTextController) CreateOgText(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	emb := utils.EmbeddingAPI(req.Text)
 
 	ogtext := model.OgText{
 		Text:      req.Text,
-		Embedding: pgvector.NewVector(emb.Embedding),
+		Embedding: pgvector.NewVector(req.Embedding),
 	}
 
 	if err := otc.DB.Create(&ogtext).Error; err != nil {
@@ -71,15 +69,13 @@ func (otc *OgTextController) CompareText(c *gin.Context) {
 		return
 	}
 
-	emb := utils.EmbeddingAPI(req.Text)
-
 	var results []struct {
 		ID       uint
 		Text     string
 		Distance float32
 	}
 
-	vec := pgvector.NewVector(emb.Embedding)
+	vec := pgvector.NewVector(req.Embedding)
 	// consulta ANN no pgvector
 	otc.DB.Raw(ANN_QUERY, vec, vec).Scan(&results)
 
@@ -117,14 +113,13 @@ func (otc *OgTextController) CompareFeed(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	emb := utils.EmbeddingAPI(req.Text)
 
 	ogtext := model.OgText{
 		Text:      req.Text,
-		Embedding: pgvector.NewVector(emb.Embedding),
+		Embedding: pgvector.NewVector(req.Embedding),
 	}
 
-	vec := pgvector.NewVector(emb.Embedding)
+	vec := pgvector.NewVector(req.Embedding)
 	var results []struct {
 		ID       uint
 		Text     string
