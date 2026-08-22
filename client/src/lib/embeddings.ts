@@ -1,9 +1,9 @@
 import { pipeline, env } from '@huggingface/transformers';
 
-// Konfiguration für Produktion erzwingen
-env.allowLocalModels = true;       // Erlaubt das Laden aus dem eigenen 'public' Ordner
-env.useBrowserCache = true;        // Speichert es im Browser für spätere Besuche
-env.localModelPath = '/models';    // Basispfad zu deinem public/models Ordner
+// Configuração para produção e ambiente local
+env.allowLocalModels = true;       // Permite carregar da pasta 'public'
+env.useBrowserCache = true;        // Armazena no navegador após o 1º carregamento
+env.localModelPath = '/models';    // Aponta para a pasta 'public/models'
 
 class EmbeddingService {
   private extractor: any = null;
@@ -11,7 +11,6 @@ class EmbeddingService {
 
   async init() {
     if (this.extractor) return;
-    
     if (this.loadingPromise) return this.loadingPromise;
 
     this.loadingPromise = (async () => {
@@ -21,17 +20,20 @@ class EmbeddingService {
       const device = hasWebGPU ? 'webgpu' : 'wasm';
       console.log(`Usando dispositivo de inferência: ${device}`);
       
-      // WICHTIG: Der Pfad ist jetzt relativ zu deinem public-Ordner!
-      this.extractor = await pipeline(
-        'feature-extraction',
-        'all-MiniLM-L6-v2', // Kein 'Xenova/' Prefix mehr, da es lokal liegt!
-        { 
-          device,
-          // Fallback, falls es doch remote geladen werden muss
-          revision: 'main' 
-        }
-      );
-      console.log('✅ Modelo carregado com sucesso!');
+      try {
+        this.extractor = await pipeline(
+          'feature-extraction',
+          'Xenova/all-MiniLM-L6-v2', // O nome permanece, mas o env.localModelPath intercepta
+          {
+            device,
+            quantized: true
+          }
+        );
+        console.log('✅ Modelo carregado com sucesso!');
+      } catch (error) {
+        console.error('❌ Falha ao carregar o modelo:', error);
+        throw new Error('Falha ao carregar o modelo. Verifique se o arquivo .onnx tem ~25MB e não é um ponteiro Git.');
+      }
     })();
 
     return this.loadingPromise;
@@ -39,7 +41,10 @@ class EmbeddingService {
 
   async getEmbedding(text: string): Promise<number[]> {
     await this.init();
-    const output = await this.extractor(text, { pooling: 'mean', normalize: true });
+    const output = await this.extractor(text, { 
+      pooling: 'mean', 
+      normalize: true 
+    });
     return Array.from(output.data);
   }
 }
