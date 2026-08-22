@@ -1,8 +1,9 @@
 import { pipeline, env } from '@huggingface/transformers';
 
-// Configurações para melhorar a resiliência do download e cache
-env.allowLocalModels = false;
-env.useBrowserCache = true;
+// Konfiguration für Produktion erzwingen
+env.allowLocalModels = true;       // Erlaubt das Laden aus dem eigenen 'public' Ordner
+env.useBrowserCache = true;        // Speichert es im Browser für spätere Besuche
+env.localModelPath = '/models';    // Basispfad zu deinem public/models Ordner
 
 class EmbeddingService {
   private extractor: any = null;
@@ -11,23 +12,24 @@ class EmbeddingService {
   async init() {
     if (this.extractor) return;
     
-    if (this.loadingPromise) {
-      return this.loadingPromise;
-    }
+    if (this.loadingPromise) return this.loadingPromise;
 
     this.loadingPromise = (async () => {
       console.log('🤖 Carregando modelo de embeddings...');
       
-      // Verifica se o navegador suporta WebGPU nativamente
       const hasWebGPU = 'gpu' in navigator;
       const device = hasWebGPU ? 'webgpu' : 'wasm';
-      
       console.log(`Usando dispositivo de inferência: ${device}`);
       
+      // WICHTIG: Der Pfad ist jetzt relativ zu deinem public-Ordner!
       this.extractor = await pipeline(
         'feature-extraction',
-        'Xenova/all-MiniLM-L6-v2',
-        { device } // Usa o dispositivo detectado dinamicamente
+        'all-MiniLM-L6-v2', // Kein 'Xenova/' Prefix mehr, da es lokal liegt!
+        { 
+          device,
+          // Fallback, falls es doch remote geladen werden muss
+          revision: 'main' 
+        }
       );
       console.log('✅ Modelo carregado com sucesso!');
     })();
@@ -37,12 +39,7 @@ class EmbeddingService {
 
   async getEmbedding(text: string): Promise<number[]> {
     await this.init();
-    
-    const output = await this.extractor(text, {
-      pooling: 'mean',
-      normalize: true,
-    });
-    
+    const output = await this.extractor(text, { pooling: 'mean', normalize: true });
     return Array.from(output.data);
   }
 }
