@@ -1,4 +1,8 @@
-import { pipeline } from '@huggingface/transformers';
+import { pipeline, env } from '@huggingface/transformers';
+
+// Configurações para melhorar a resiliência do download e cache
+env.allowLocalModels = false;
+env.useBrowserCache = true;
 
 class EmbeddingService {
   private extractor: any = null;
@@ -13,15 +17,19 @@ class EmbeddingService {
 
     this.loadingPromise = (async () => {
       console.log('🤖 Carregando modelo de embeddings...');
+      
+      // Verifica se o navegador suporta WebGPU nativamente
+      const hasWebGPU = 'gpu' in navigator;
+      const device = hasWebGPU ? 'webgpu' : 'wasm';
+      
+      console.log(`Usando dispositivo de inferência: ${device}`);
+      
       this.extractor = await pipeline(
         'feature-extraction',
         'Xenova/all-MiniLM-L6-v2',
-        {
-          // Opcional: usar WebGPU se disponível
-          device: 'webgpu', // ou 'webgpu' se suportado
-        }
+        { device } // Usa o dispositivo detectado dinamicamente
       );
-      console.log('✅ Modelo carregado!');
+      console.log('✅ Modelo carregado com sucesso!');
     })();
 
     return this.loadingPromise;
