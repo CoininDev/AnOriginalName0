@@ -25,8 +25,7 @@ class EmbeddingService {
           'feature-extraction',
           'Xenova/all-MiniLM-L6-v2', // O nome permanece, mas o env.localModelPath intercepta
           {
-            device,
-            quantized: true
+            device
           }
         );
         console.log('✅ Modelo carregado com sucesso!');
