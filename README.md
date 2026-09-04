@@ -18,3 +18,5 @@ Go + Gin + Python + AI + React.ts + Supabase + PostgreSQL + pgvector + nginx = X
 - **Database**: [Supabase](https://supabase.com/) with PostgreSQL + [pgvector](https://github.com/pgvector/pgvector)
 - **Search Optimization**: ANN (Approximate Nearest Neighbor) + indexes for fast queries
 
+## Available at
+[anoriginalname0.coinindev.workers.dev](anoriginalname0.coinindev.workers.dev)
